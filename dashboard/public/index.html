@@ -1,1 +1,36 @@
 
+<!DOCTYPE html>
+<html>
+<head><title>Control Panel</title></head>
+<body>
+  <h2>RAKMODJAI Bot Control</h2>
+  <label><input type="checkbox" id="verify" /> ปุ่มยืนยันตัวตน</label><br>
+  <label><input type="checkbox" id="zone" /> ปุ่มเลือกโซน</label><br>
+  <hr>
+  <h3>Broadcast</h3>
+  <input placeholder="Channel ID" id="channel" /><br>
+  <input placeholder="Title" id="title" /><br>
+  <textarea placeholder="Message" id="msg"></textarea><br>
+  <button onclick="send()">Broadcast</button>
+  <script>
+    fetch('/api/config').then(r => r.json()).then(c => {
+      document.getElementById('verify').checked = c.verifyButton;
+      document.getElementById('zone').checked = c.zoneButton;
+    });
+    document.getElementById('verify').onchange = () => fetch('/api/toggle', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'verifyButton' }) });
+    document.getElementById('zone').onchange = () => fetch('/api/toggle', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'zoneButton' }) });
+    function send() {
+      fetch('/api/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          enabled: true,
+          channelId: document.getElementById('channel').value,
+          title: document.getElementById('title').value,
+          message: document.getElementById('msg').value
+        })
+      });
+    }
+  </script>
+</body>
+</html>
